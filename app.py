@@ -1,9 +1,9 @@
 import streamlit as st
 import numpy as np
 
-st.set_page_config(page_title="Calculadoras de Saúde", layout="wide")
+st.set_page_config(page_title="Fit Calculator", layout="wide")
 
-st.title("💪 Calculadoras de Saúde")
+st.title("💪 Fit Calculator")
 
 # Função para calcular o IMC
 def calcular_imc(peso, altura):
@@ -73,7 +73,7 @@ def calcular_macros(calorias, objetivo):
 aba = st.sidebar.radio("Escolha uma calculadora", ["IMC", "TMB", "Gordura Corporal", "Peso Ideal", "Macronutrientes"])
 
 if aba == "IMC":
-    st.header("📏 Calculadora de Índice de Massa Corporal (IMC)")
+    st.header("📏 Índice de Massa Corporal (IMC)")
     peso = st.number_input("Peso (kg)", min_value=10.0, max_value=300.0, step=0.1)
     altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
     
@@ -92,7 +92,7 @@ if aba == "IMC":
             st.success(imc_status)
 
 elif aba == "TMB":
-    st.header("🔥 Calculadora de Taxa Metabólica Basal (TMB)")
+    st.header("🔥 Taxa Metabólica Basal (TMB)")
     sexo = st.selectbox("Sexo", ["Homem", "Mulher"])
     peso = st.number_input("Peso (kg)", min_value=10.0, max_value=300.0, step=0.1)
     altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
@@ -106,7 +106,7 @@ elif aba == "TMB":
         st.subheader(f"{tmb:.2f} kcal/dia")
 
 elif aba == "Gordura Corporal":
-    st.header("⚖️ Calculadora de Gordura Corporal")
+    st.header("⚖️ Gordura Corporal")
     sexo = st.selectbox("Sexo", ["Homem", "Mulher"])
     altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
     pescoco = st.number_input("Circunferência do Pescoço (cm)", min_value=20.0, max_value=70.0, step=0.1)
@@ -125,7 +125,7 @@ elif aba == "Gordura Corporal":
         st.subheader(f"{gordura:.2f} %")
 
 elif aba == "Peso Ideal":
-    st.header("🏋️ Calculadora de Peso Ideal")
+    st.header("🏋️ Peso Ideal")
     sexo = st.selectbox("Sexo", ["Homem", "Mulher"])
     altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
 
