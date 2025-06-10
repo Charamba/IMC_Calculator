@@ -1,201 +1,209 @@
-import streamlit as st
-import numpy as np
+"use client";
 
-st.set_page_config(page_title="Fit Calculator", layout="wide")
+import { useState } from "react";
 
-st.title("💪 Fit Calculator")
+export default function FitCalculator() {
+  const [tab, setTab] = useState("IMC");
 
-# Função para calcular o IMC
-def calcular_imc(peso, altura):
-    return peso / (altura*altura)
+  return (
+    <div className="flex flex-col items-center p-4 w-full">
+      <h1 className="text-2xl font-bold mb-4">💪 Fit Calculator</h1>
+      <p className="text-2xl font-medium"> Última atualização: 14-04-2025 </p>
+      <div className="flex flex-wrap justify-center gap-2 mb-4 w-full">
+        {[
+          "IMC",
+          "Gasto Energético",
+          "Gordura Corporal",
+          "Peso Ideal",
+          "Macronutrientes",
+        ].map((item) => (
+          <button
+            key={item}
+            onClick={() => setTab(item)}
+            className={`px-4 py-2 rounded-lg border ${
+              tab === item ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+      <div className="w-full max-w-lg">{tab === "IMC" && <IMCCalculator />}</div>
+      <div className="w-full max-w-lg">{tab === "Gasto Energético" && <CalculadoraGET />}</div>
+    </div>
+  );
+}
 
-def imc_status(imc):
-    imc_status = ""
-    caution_status = 1
-    if imc >= 40.0:
-        imc_status = "Obesidade grau 3"
-        caution_status = 3
-    elif 35.0 <= imc < 40.0:
-        imc_status = "Obesidade grau 2"
-        caution_status = 3
-    elif 30.0 <= imc < 35.0:
-        imc_status = "Obesidade grau 1"
-        caution_status = 3
-    elif 25.0 <= imc < 30.0:
-        imc_status = "Sobrepeso"
-        caution_status = 2
-    elif 18.5 <= imc < 25.0:
-        imc_status = "Normal"
-        caution_status = 1
-    elif  imc < 18.5:
-        imc_status = "Abaixo do normal"
-        caution_status = 2
-    return imc_status, caution_status
+function IMCCalculator() {
+  const [peso, setPeso] = useState(70);
+  const [altura, setAltura] = useState(1.75);
+  const [imc, setIMC] = useState(null);
+  const [status, setStatus] = useState(null);
 
-def imc_result_text(imc_status):
-    result_text = ""
+  function calcularIMC() {
+    const valorIMC = peso / (altura * altura);
+    setIMC(valorIMC.toFixed(2));
+    getIMCStatus(valorIMC.toFixed(2));
+  }
 
-    if imc_status == "Abaixo do normal":
-        result_text = "Procure um médico. Algumas pessoas têm um baixo peso por características do seu organismo e tudo bem. Outras podem estar enfrentando problemas, como a desnutrição. É preciso saber qual é o caso."
-    elif imc_status == "Normal":
-        result_text = "Que bom que você está com o peso normal! E o melhor jeito de continuar assim é mantendo um estilo de vida ativo e uma alimentação equilibrada."
-    elif imc_status == "Sobrepeso":
-        result_text = "Ele é, na verdade, uma pré-obesidade e muitas pessoas nessa faixa já apresentam doenças associadas, como diabetes e hipertensão. Importante rever hábitos e buscar ajuda antes de, por uma série de fatores, entrar na faixa da obesidade pra valer."
-    elif imc_status == "Obesidade grau 1":
-        result_text = "Sinal de alerta! Chegou na hora de se cuidar, mesmo que seus exames sejam normais. Vamos dar início a mudanças hoje! Cuide de sua alimentação. Você precisa iniciar um acompanhamento com nutricionista e/ou endocrinologista."
-    elif imc_status == "Obesidade grau 2":
-        result_text = "Mesmo que seus exames aparentem estar normais, é hora de se cuidar, iniciando mudanças no estilo de vida com o acompanhamento próximo de profissionais de saúde."
-    elif imc_status == "Obesidade grau 3":
-        result_text =  "Aqui o sinal é vermelho, com forte probabilidade de já existirem doenças muito graves associadas. O tratamento deve ser ainda mais urgente."
-    
-    return result_text
+  function getIMCStatus(valorIMC) {
+    if (valorIMC >= 40.0) setStatus("Obesidade grau 3 🚨");
+    else if (valorIMC >= 35.0) setStatus("Obesidade grau 2 🚨");
+    else if (valorIMC >= 30.0) setStatus("Obesidade grau 1 🚨");
+    else if (valorIMC >= 25.0) setStatus("Sobrepeso ⚠️");
+    else if (valorIMC >= 18.5) setStatus("Normal ✅");
+    else setStatus("Abaixo do normal ⚠️");
+  }
 
+  return (
+    <div className="flex flex-col items-center gap-4 p-4 border rounded-lg shadow-lg w-full">
+      <h2 className="text-xl font-bold">📏 Calculadora de IMC</h2>
+      <div className="flex flex-col w-full">
+        <label className="text-sm font-semibold">Peso (kg)</label>
+        <input
+          type="number"
+          value={peso}
+          onChange={(e) => setPeso(parseFloat(e.target.value))}
+          className="border p-2 rounded-md"
+        />
+      </div>
+      <div className="flex flex-col w-full">
+        <label className="text-sm font-semibold">Altura (m)</label>
+        <input
+          type="number"
+          value={altura}
+          onChange={(e) => setAltura(parseFloat(e.target.value))}
+          className="border p-2 rounded-md"
+        />
+      </div>
+      <button
+        onClick={calcularIMC}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+      >
+        Calcular IMC
+      </button>
+      {imc && (
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">Seu IMC é:</h3>
+          <p className="text-2xl font-bold">{imc} kg/m²</p>
+          <p className="text-md mt-2 font-medium">Status: {status}</p>
+          //<p className="text-2xl font-medium">Status: {status}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
+function CalculadoraGET() {
+  const [sexo, setSexo] = useState('Homem');
+  const [peso, setPeso] = useState('');
+  const [altura, setAltura] = useState('');
+  const [idade, setIdade] = useState('');
+  const [atividade, setAtividade] = useState('Sedentário');
+  const [resultado, setResultado] = useState(null);
 
-# Função para calcular a TMB
-def calcular_tmb(sexo, peso, altura, idade):
-    if sexo == "Homem":
-        return 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
-    else:
-        return 447.6 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade)
+  const calcularTMB = (sexo, peso, altura, idade) => {
+    if (sexo === 'Homem') {
+      return 88.36 + 13.4 * peso + 4.8 * altura - 5.7 * idade;
+    } else {
+      return 447.6 + 9.2 * peso + 3.1 * altura - 4.3 * idade;
+    }
+  };
 
-# 
-def calcular_get(tmb, atividade):
-    if atividade == "Sedentário":
-        return tmb*1.2
-    elif atividade == "Levemente ativo":
-        return tmb*1.375
-    elif atividade == "Moderadamente ativo":
-        return tmb*1.55
-    elif atividade == "Muito ativo":
-        return tmb*1.725
-    elif atividade == "Extremamente ativo":
-        return tmb*1.9
+  const calcularGET = (tmb, atividade) => {
+    const fatores = {
+      'Sedentário': 1.2,
+      'Levemente ativo': 1.375,
+      'Moderadamente ativo': 1.55,
+      'Muito ativo': 1.725,
+      'Extremamente ativo': 1.9,
+    };
+    return tmb * fatores[atividade];
+  };
 
-# Função para calcular o percentual de gordura corporal
-def calcular_gordura(sexo, altura, pescoco, cintura, quadril=None):
-    if sexo == "Homem":
-        return 86.01 * np.log10(cintura - pescoco) - 70.041 * np.log10(altura) + 36.76
-    else:
-        return 163.205 * np.log10(cintura + quadril - pescoco) - 97.684 * np.log10(altura) - 78.387
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const pesoNum = parseFloat(peso);
+    const alturaCm = parseFloat(altura) * 100;
+    const idadeNum = parseInt(idade);
 
-# Função para calcular o peso ideal
-def calcular_peso_ideal(sexo, altura):
-    altura_pol = altura / 2.54  # Converter cm para polegadas
-    if sexo == "Homem":
-        return 50 + (2.3 * (altura_pol - 60))
-    else:
-        return 45.5 + (2.3 * (altura_pol - 60))
+    if (isNaN(pesoNum) || isNaN(alturaCm) || isNaN(idadeNum)) {
+      setResultado({ erro: 'Preencha todos os campos corretamente.' });
+      return;
+    }
 
-# Função para calcular os macronutrientes
-def calcular_macros(calorias, objetivo):
-    if objetivo == "Manutenção":
-        carbs, prot, gord = 50, 20, 30
-    elif objetivo == "Ganho de Massa":
-        carbs, prot, gord = 40, 30, 30
-    else:  # Perda de Peso
-        carbs, prot, gord = 20, 40, 40
+    const tmb = calcularTMB(sexo, pesoNum, alturaCm, idadeNum);
+    const get = calcularGET(tmb, atividade);
 
-    carbs_g = (calorias * carbs / 100) / 4
-    prot_g = (calorias * prot / 100) / 4
-    gord_g = (calorias * gord / 100) / 9
+    setResultado({ tmb: tmb.toFixed(2), get: get.toFixed(2) });
+  };
 
-    return carbs_g, prot_g, gord_g
+  return (
+    <div className="max-w-2xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">🔋 Calculadora de Gasto Energético</h1>
 
-# Criando abas no Streamlit
-aba = st.sidebar.radio("Escolha uma calculadora", ["IMC", "Gasto Energético", "Gordura Corporal", "Peso Ideal", "Macronutrientes"])
+      <h2 className="text-xl font-semibold">🔥 Taxa Metabólica Basal (TMB)</h2>
+      <p className="mb-4">
+        A <strong>Taxa Metabólica Basal (TMB)</strong> é a quantidade mínima de energia que o corpo precisa para manter as funções vitais em repouso, como respiração, circulação e temperatura corporal.
+      </p>
 
-if aba == "IMC":
-    st.header("📏 Calculadora de Índice de Massa Corporal (IMC)")
-    st.write("O **Índice de Massa Corporal (IMC)**, é um parâmetro utilizado para avaliar se seu peso está dentro do valor ideal para a sua altura. O IMC é calculado dividindo seu peso pelo o quadrado da sua altura.")
-    peso = st.number_input("Peso (kg)", min_value=10.0, max_value=300.0, step=0.1)
-    altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
-    
-    if st.button("Calcular IMC"):
-        imc = calcular_imc(peso, altura)
-        st.write("Seu IMC é:")
-        st.subheader(f"{imc:.2f} kg/m²")
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <label className="block">
+          Sexo:
+          <select className="w-full border p-2" value={sexo} onChange={(e) => setSexo(e.target.value)}>
+            <option>Homem</option>
+            <option>Mulher</option>
+          </select>
+        </label>
 
-        imc_status, caution_status = imc_status(imc)
+        <label className="block">
+          Peso (kg):                                          
+          <input type="number" min="10" max="300" step="0.1" className="border p-2 rounded-md" value={peso} onChange={(e) => setPeso(e.target.value)} />
+        </label>
 
-        if caution_status == 3:
-            st.error("**" + imc_status + "**", icon="🚨")
-        elif caution_status == 2:
-            st.warning("**" + imc_status + "**", icon="⚠️")
-        elif caution_status == 1:
-            st.success("**" + imc_status + "**", icon="✅")
+        <label className="block">
+          Altura (m):
+          <input type="number" min="0.5" max="2.5" step="0.01" className="border p-2 rounded-md" value={altura} onChange={(e) => setAltura(e.target.value)} />
+        </label>
 
-        st.write(imc_result_text(imc_status))
+        <label className="block">
+          Idade:
+          <input type="number" min="10" max="120" step="1" className="border p-2 rounded-md" value={idade} onChange={(e) => setIdade(e.target.value)} />
+        </label>
 
-elif aba == "Gasto Energético":
-    st.header("🔋Calculadora de Gasto Energético")
-    st.subheader("🔥 Taxa Metabólica Basal (TMB)")
-    st.write("A **Taxa Metabólica Basal (TMB)** é a quantidade mínima de energia que o corpo precisa para manter as funções vitais em repouso, como respiração, circulação e temperatura corporal. Ela representa cerca de 60% a 70% do gasto energético total diário e varia de acordo com sexo, idade, peso e altura.")
-    sexo = st.selectbox("Sexo", ["Homem", "Mulher"])
-    peso = st.number_input("Peso (kg)", min_value=10.0, max_value=300.0, step=0.1)
-    altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
-    idade = st.number_input("Idade", min_value=10, max_value=120, step=1)
+        <label className="block">
+          Nível de Atividade Física:
 
-    altura_cm = altura*100
+          🛋️ Sedentário (pouco ou nenhum exercício): TMB × 1.2
+          🚶 Levemente ativo (exercício leve 1-3 dias/semana): TMB × 1.375
+          🏃 Moderadamente ativo (exercício moderado 3-5 dias/semana): TMB × 1.55
+          🏋️ Muito ativo (exercício intenso 6-7 dias/semana): TMB × 1.725
+          🏆 Extremamente ativo (atletas ou trabalho físico intenso): TMB × 1.9
 
-    st.subheader("⚡ Multiplique pelo Nível de Atividade Física")
-    st.write("Depois de calcular a TMB, multiplicamos esse valor por um fator de atividade para obter o **Gasto Energético Total (GET)**, que representa o total de calorias diárias considerando seu estilo de vida:")
+          <select className="border p-2 rounded-md" value={atividade} onChange={(e) => setAtividade(e.target.value)}>
+            <option>Sedentário</option>
+            <option>Levemente ativo</option>
+            <option>Moderadamente ativo</option>
+            <option>Muito ativo</option>
+            <option>Extremamente ativo</option>
+          </select>
+        </label>
+                                        
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">Calcular Gasto Energético</button>
+      </form>
 
-    st.write("🛋️ **Sedentário** (pouco ou nenhum exercício): TMB × 1.2")
-    st.write("🚶 **Levemente ativo** (exercício leve 1-3 dias/semana): TMB × 1.375")
-    st.write("🏃 **Moderadamente ativo** (exercício moderado 3-5 dias/semana): TMB × 1.55")
-    st.write("🏋️ **Muito ativo** (exercício intenso 6-7 dias/semana): TMB × 1.725")
-    st.write("🏆 **Extremamente ativo** (atletas ou trabalho físico intenso): TMB × 1.9")
-
-    atividade = st.selectbox("Nível de Atividade Física", ["Sedentário", "Levemente ativo", "Moderadamente ativo", "Muito ativo", "Extremamente ativo"])
-
-    if st.button("Calcular Gasto Energético"):
-        tmb = calcular_tmb(sexo, peso, altura_cm, idade)
-        st.write("Sua Taxa Metabólica Basal é:")
-        st.subheader(f"{tmb:.2f} kcal/dia")
-
-        get = calcular_get(tmb, atividade)
-        st.write("Seu Gasto Energético Total é:")
-        st.subheader(f"{get:.2f} kcal/dia")
-
-
-elif aba == "Gordura Corporal":
-    st.header("⚖️ Calculadora de Gordura Corporal")
-    sexo = st.selectbox("Sexo", ["Homem", "Mulher"])
-    altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
-    pescoco = st.number_input("Circunferência do Pescoço (cm)", min_value=20.0, max_value=70.0, step=0.1)
-    cintura = st.number_input("Circunferência da Cintura (cm)", min_value=50.0, max_value=200.0, step=0.1)
-
-    altura_cm = altura*100
-
-    if sexo == "Mulher":
-        quadril = st.number_input("Circunferência do Quadril (cm)", min_value=50.0, max_value=200.0, step=0.1)
-    else:
-        quadril = None
-    
-    if st.button("Calcular Gordura Corporal"):
-        gordura = calcular_gordura(sexo, altura_cm, pescoco, cintura, quadril)
-        st.write("Seu percentual de gordura corporal é:")
-        st.subheader(f"{gordura:.2f} %")
-
-elif aba == "Peso Ideal":
-    st.header("🏋️ Calculadora de Peso Ideal")
-    sexo = st.selectbox("Sexo", ["Homem", "Mulher"])
-    altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
-
-    altura_cm = altura*100
-
-    if st.button("Calcular Peso Ideal"):
-        peso_ideal = calcular_peso_ideal(sexo, altura_cm)
-        st.write("Seu peso ideal é:")
-        st.subheader(f"{peso_ideal:.2f} kg")
-
-elif aba == "Macronutrientes":
-    st.header("🍎 Calculadora de Macronutrientes")
-    calorias = st.number_input("Calorias diárias recomendadas (kcal)", min_value=500, max_value=5000, step=10)
-    objetivo = st.selectbox("Objetivo", ["Manutenção", "Ganho de Massa", "Perda de Peso"])
-
-    if st.button("Calcular Macronutrientes"):
-        carbs, prot, gord = calcular_macros(calorias, objetivo)
-        st.write(f"**Quantidades:**\n - Carboidratos: {carbs:.2f}g\n - Proteínas: {prot:.2f}g\n - Gorduras: {gord:.2f}g")
-
+      {resultado && (
+        <div className="mt-6 p-4 border rounded">
+          {resultado.erro ? (
+            <p className="text-red-600">{resultado.erro}</p>
+          ) : (
+            <>
+              <p><strong>🔥 TMB:</strong> {resultado.tmb} kcal/dia</p>
+              <p><strong>⚡ GET:</strong> {resultado.get} kcal/dia</p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
